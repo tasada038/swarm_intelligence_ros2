@@ -25,8 +25,8 @@ MrfoComponent::MrfoComponent(const rclcpp::NodeOptions & options)
     this->declare_parameter("max_iter", 5);
 
 	subscriber_ = this->create_subscription<std_msgs::msg::Float32>(
-		"/input", 
-		10, 
+		"/input",
+		10,
 		std::bind(&MrfoComponent::timer_callback, this, std::placeholders::_1)\
 	);
     publisher_ =
@@ -58,9 +58,9 @@ void MrfoComponent::timer_callback(
     std_msgs::msg::Float32 data2;
 	// request->a = number of iterations
 	for (int i=0; i < max_iter; i++){
-    	RCLCPP_INFO(this->get_logger(), "Generation %d:", i);
+    RCLCPP_INFO(this->get_logger(), "Generation %d:", i);
 		this->move(i, max_iter);
-	}	
+	}
 
     data.data = global_best_pos[0];
 	data2.data = global_best_pos[1];
@@ -90,7 +90,7 @@ void MrfoComponent::manta_init(){
 	}
 	global_best_value = manta[gbest_num].value;
 	for (int j=0; j<dimension_; j++){
-	    global_best_pos[j] = manta[gbest_num].position_[j];
+    global_best_pos[j] = manta[gbest_num].position_[j];
 	}
 }
 
@@ -118,30 +118,30 @@ void MrfoComponent::move(int current_iter, int max_iter)
 				xrand =  xminj + (xmaxj - xminj) * ((double)rand() / RAND_MAX);
 				for (int j=0; j<dimension_; j++){
 					if(i == 0){
-						manta[i].position_[j] = xrand 
-								+ r * (xrand - manta[i].position_[j]) 
+						manta[i].position_[j] = xrand
+								+ r * (xrand - manta[i].position_[j])
 								+ beta * (xrand - manta[i].position_[j]);
 					}
 					else{ // population = 2 - N
-						manta[i].position_[j] = xrand 
-								+ r * (manta[i-1].position_[j] - manta[i].position_[j]) 
+						manta[i].position_[j] = xrand
+								+ r * (manta[i-1].position_[j] - manta[i].position_[j])
 								+ beta * (xrand - manta[i].position_[j]);
 					}
-				}		
+				}
 			}
 			else{
 				// RCLCPP_INFO(this->get_logger(), "normal\n");
 				for (int j=0; j<dimension_; j++){
 					if(i == 0){
-						manta[i].position_[j] = global_best_pos[j] 
-								+ r * (global_best_pos[j] - manta[i].position_[j]) 
+						manta[i].position_[j] = global_best_pos[j]
+								+ r * (global_best_pos[j] - manta[i].position_[j])
 								+ beta * (global_best_pos[j] - manta[i].position_[j]);
 					}
 					else{ // population = 2 - N
-						manta[i].position_[j] = global_best_pos[j] 
-								+ r * (manta[i-1].position_[j] - manta[i].position_[j]) 
+						manta[i].position_[j] = global_best_pos[j]
+								+ r * (manta[i-1].position_[j] - manta[i].position_[j])
 								+ beta * (global_best_pos[j] - manta[i].position_[j]);
-					}	
+					}
 				}
 			}
 		}
@@ -154,14 +154,14 @@ void MrfoComponent::move(int current_iter, int max_iter)
 			for (int j=0; j<dimension_; j++){
 				if(i == 0){
 					manta[i].position_[j] = manta[i].position_[j]
-							+ r * (global_best_pos[j] - manta[i].position_[j]) 
+							+ r * (global_best_pos[j] - manta[i].position_[j])
 							+ alpha * (global_best_pos[j] - manta[i].position_[j]);
 				}
 				else{ // population = 2 - N
-					manta[i].position_[j] = manta[i].position_[j] 
-							+ r * (manta[i-1].position_[j] - manta[i].position_[j]) 
+					manta[i].position_[j] = manta[i].position_[j]
+							+ r * (manta[i-1].position_[j] - manta[i].position_[j])
 							+ alpha * (global_best_pos[j] - manta[i].position_[j]);
-				}				
+				}
 			}
 		}
 		if (manta[i].value < global_best_value){
